@@ -1,4 +1,4 @@
-jss
+JSS Puppet Module
 
 This is the jss module. It is intended to fully install and configure JAMFSoftware JSS, Distribution points, and MySQL backend. This module makes as many sane default choices as possible and, by default, will install all components required for the JSS (Tomcat, MySQL, JSS) to a single node.
 
