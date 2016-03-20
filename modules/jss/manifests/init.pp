@@ -59,8 +59,10 @@ class jss($firewall=true,
 
 
   jss::context{'production':
-    ensure   => present,
-    firewall => true,
+    ensure     => present,
+    firewall   => true,
+    db_user   => 'produser',
+    db_passwd => 'prodpw',
   }
   jss::db{'production':
     ensure    => present,
