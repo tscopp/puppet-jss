@@ -1,0 +1,30 @@
+{
+  "name": "arpitaggarwal/tomcat",
+  "version": "0.7.0",
+  "author": "arpitaggarwal",
+  "summary": "Configure and Install Tomcat on Ubuntu/Debian",
+  "license": "Apache-2.0",
+  "source": "https://github.com/arpitaggarwal/tomcat",
+  "issues_url": "https://github.com/arpitaggarwal/tomcat/issues",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "10.04"
+      ]
+    }
+  ],
+  "tags": [
+    "tomcat",
+    "tomcat6",
+    "tomcat 6",
+    "tomcat7",
+    "tomcat 7",
+    "ubuntu"
+  ],
+  "project_page": "https://github.com/arpitaggarwal/tomcat",
+  "dependencies": [
+  
+  ]
+}
