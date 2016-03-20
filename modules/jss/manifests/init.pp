@@ -57,32 +57,30 @@ class jss($firewall=true,
     ensure => installed
   }
 
-  class{ 'jss::jss':
+
+  jss::context{'production':
+    ensure   => present,
     firewall => true,
-    context  => $contexts,
-    require  => [Package['tar'],
-                Package['unzip'],
-                Class['jss::db'],],
   }
-  class{ 'jss::db':
-    firewall  => $firewall,
-    context   => 'production',
-    db_user   => $db_user,
-    db_passwd => $db_passwd,
-    jss_addr  => $jss_addr,
+  jss::db{'production':
+    ensure    => present,
+    firewall  => true,
+    db_user   => 'produser',
+    db_passwd => 'prodpw',
   }
-  class{ 'jss::db':
-    firewall  => $firewall,
-    context   => 'testing',
-    db_user   => $db_user,
-    db_passwd => $db_passwd,
-    jss_addr  => $jss_addr,
-  }
-  class{ 'jss::db':
-    firewall  => $firewall,
-    context   => 'development',
-    db_user   => $db_user,
-    db_passwd => $db_passwd,
-    jss_addr  => $jss_addr,
-  }
+
+  #class{ 'jss::jss':
+  #  firewall => true,
+  #  context  => $contexts,
+  #  require  => [Package['tar'],
+  #              Package['unzip'],
+  #              Class['jss::db'],],
+  #}
+  #class{ 'jss::db':
+  #  firewall  => $firewall,
+  #  context   => 'production',
+  #  db_user   => $db_user,
+  #  db_passwd => $db_passwd,
+  #  jss_addr  => $jss_addr,
+  #}
 }
