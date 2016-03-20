@@ -4,7 +4,12 @@
 define jss::context($ensure='present',
               $context = $title,
               $firewall=true,
-              $db_host='localhost',
+              $db_addr='localhost',
+              $db_port='3306',
+              $db_user="${title}user",
+              $db_passwd="${title}pw",
+              $db_min_pool='5',
+              $db_max_pool='90',
               $war='ROOT.war'){
   if $ensure == 'present'{
     if $firewall {
@@ -29,19 +34,31 @@ define jss::context($ensure='present',
       port    => '8080'
     }
     file{"${context}.war":
-      ensure => present,
-      path   => "/var/lib/tomcat7/webapps/${title}.war",
-      owner  => 'tomcat7',
-      group  => 'tomcat7',
-      mode   => '0644',
-      source => "puppet:///modules/jss/${war}"
+      ensure  => present,
+      path    => "/var/lib/tomcat7/webapps/${title}.war",
+      owner   => 'tomcat7',
+      group   => 'tomcat7',
+      mode    => '0644',
+      source  => "puppet:///modules/jss/${war}",
+      require => Class['tomcat'],
     }
-    file{"/var/lib/tomcat7/webapps/${context}/WEB-INF/xml/DataBase.xml":
-    content => template('jss/DataBase.xml.erb'),
-    owner   => tomcat7,
-    group   => tomcat7,
-    mode    => '0644',
-    notify  => Service['tomcat7'],
-  }
+    exec{'pause_for_tomcat_deploy':
+      command => 'sleep 15',
+      path    => '/usr/bin:/bin',
+      require => [File["${context}.war"],
+                  Service['tomcat7'],],
+    }
+    file{'DataBase.xml':
+      content => template('jss/DataBase.xml.erb'),
+      path    => "/var/lib/tomcat7/webapps/${context}/WEB-INF/xml/DataBase.xml",
+      owner   => tomcat7,
+      group   => tomcat7,
+      mode    => '0644',
+      require => Exec['pause_for_tomcat_deploy'],
+    }
+    file { '/tmp/link-to-motd':
+    ensure     => 'link',
+      target => '/etc/motd',
+    }
   }
 }
