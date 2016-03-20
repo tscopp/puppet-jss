@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
                 "vagrant" => true,
                 "server_role" => 'jss',
             }
-            puppet.options = "--verbose --debug"
+            #puppet.options = "--verbose --debug"
             puppet.manifests_path="manifests/"
             puppet.manifest_file="site.pp"
             puppet.module_path= "modules/"
