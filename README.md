@@ -55,21 +55,21 @@
 
 ### SSL Enabled
 
-Currently SSL and NonSSL hosts can NOT exist on the same tomcat instance. If you'd like SSL certs you should create a keystore:
+SSL and non-SSL hosts can NOT exist on the same tomcat instance. If you'd like SSL certs you should create a keystore:
 
 ```bash
-# keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -validity 365 -keystore ~/keystore.jks
+keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -validity 365 -keystore ~/keystore.jks
 ```
 Create a CSR:
 ```bash
-# keytool -certreq -keyalg RSA -alias tomcat -keystore ~/keystore.jks
+keytool -certreq -keyalg RSA -alias tomcat -keystore ~/keystore.jks
 ```
 Sign the CSR in the JSS web interface. Download the ca.pem, and the signed webcert. Add them to the keystore:
 ```bash
-# keytool -import -alias root -keystore ~/keystore.jks trustcacerts -file ~/Downloads/ca.pem
+keytool -import -alias root -keystore ~/keystore.jks trustcacerts -file ~/Downloads/ca.pem
 ```
 ```bash
-# keytool -import -alias tomcat -keystore ~/keystore.jks trustcacerts -file ~/Downloads/webcert.pem
+keytool -import -alias tomcat -keystore ~/keystore.jks trustcacerts -file ~/Downloads/webcert.pem
 ```
 Move keystore.jks to the modules/jss/files/ and add the following to the desired node:
 ```ruby
