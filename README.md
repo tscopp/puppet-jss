@@ -1,6 +1,6 @@
 # puppet-jss
 
-Deployment of JAMF Software's JSS is, by no means, a unmanageable task. There are, however, a lot of steps. This module seeks to resolve that.
+Deployment of JAMF Software's JSS is, by no means, an unmanageable task. There are, however, a lot of steps. This module seeks to resolve that.
 
 Install the module:
 ```bash
