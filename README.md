@@ -1,6 +1,8 @@
-#H1 jss
+# jss
 
-#H3 Single Context:
+## Deployment
+
+### Single Context
 ```ruby
     jss::context{'production':
         ensure    => present,
@@ -12,7 +14,7 @@
     }
 ```
 
-Multi:context:
+### Multi-context
 ```ruby
     jss::context{'production':
         ensure   => present,
@@ -32,7 +34,7 @@ Multi:context:
     }
 ```
 
-Clustered:
+### Clustered
 ```ruby
     jss::context{'jssprod01':
         ensure   => present,
@@ -51,7 +53,7 @@ Clustered:
     }
 ```
 
-SSL:
+### SSL Enabled
 
 Currently SSL and NonSSL hosts can NOT exist on the same tomcat instance. If you'd like SSL certs you should create a keystore:
 
