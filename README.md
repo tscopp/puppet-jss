@@ -1,7 +1,7 @@
 #H1 jss
 
-#H3Single Context:
-    ```ruby
+#H3 Single Context:
+```ruby
     jss::context{'production':
         ensure    => present,
         firewall  => true,
@@ -10,10 +10,10 @@
         ensure    => present,
         firewall  => true,
     }
-    ```
+```
 
 Multi:context:
-    ```ruby
+```ruby
     jss::context{'production':
         ensure   => present,
         firewall => true,
@@ -30,10 +30,10 @@ Multi:context:
         ensure   => present,
         firewall => true,
     }
-    ```
+```
 
 Clustered:
-    ```ruby
+```ruby
     jss::context{'jssprod01':
         ensure   => present,
         context  => 'production',
@@ -49,7 +49,7 @@ Clustered:
         context  => 'production',
         firewall => true,
     }
-    ```
+```
 
 SSL:
 
