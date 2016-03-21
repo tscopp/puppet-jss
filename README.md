@@ -1,4 +1,11 @@
-# jss
+# puppet-jss
+
+Deployment of JAMF Software's JSS is, by no means, a unmanageable task. There are, however, a lot of steps. This module seeks to resolve that.
+
+Install the module:
+```bash
+puppet module install tscopp-jss -i /etc/puppet/modules/
+```
 
 ## Deployment
 
