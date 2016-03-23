@@ -6,22 +6,68 @@ exec{'apt-update':
   command     => 'apt-get update',
 }
 
-node jss{
+# Multi-Context all-in-one
+node default{
   jss::context{'production':
+    ensure          => present,
+    api             => false,
+    user_enrollment => false,
+  }
+  jss::db{'production':
+    ensure => present,
+  }
+  jss::context{'development':
+    ensure => present,
+  }
+  jss::db{'development':
+    ensure => present,
+  }
+
+}
+
+# Single-context, backed by a separate DB host
+node jss {
+  jss::context{'dev':
     ensure    => present,
-    db_addr   => '192.168.56.102',
+    db_addr   => '192.168.56.104',
+    db_passwd => 'devpw',
+    db_user   => 'devuser',
+    firewall  => false,
+  }
+}
+
+# Single-context, clustered, backed by a separate DB host
+node jss01{
+  jss::context{'jssprod01':
+    ensure    => present,
+    context   => 'production',
+    db_addr   => '192.168.56.104',
+    db_passwd => 'jamfsw03',
+    db_user   => 'jamfsoftware',
+  }
+}
+node jss02 {
+  jss::context{'jssprod02':
+    ensure    => present,
+    context   => 'production',
+    db_addr   => '192.168.56.104',
     db_user   => 'jamfsoftware',
     db_passwd => 'jamfsw03',
-    firewall  => true,
   }
 }
 node db {
   jss::db{'production':
     ensure    => present,
-    db_addr   => '192.168.56.102',
+    db_addr   => '192.168.56.104',
     db_user   => 'jamfsoftware',
     db_passwd => 'jamfsw03',
-    jss_addr  => '192.168.56.101',
-    firewall  => false,
+    jss_addr  => '192.168.56.102',
+  }
+  jss::db{'dev':
+    ensure    => present,
+    db_addr   => '192.168.56.104',
+    db_passwd => 'devpw',
+    db_user   => 'devuser',
+    jss_addr  => '192.168.56.101'
   }
 }
