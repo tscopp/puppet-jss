@@ -4,7 +4,7 @@
 define jss::db($firewall=true,
               $context=$title,
               $db_addr='localhost',
-              $db_name='jamfsoftware',
+              $db_name=$title,
               $db_user="${title}user",
               $db_passwd="${title}pw",
               $db_port='3306',
