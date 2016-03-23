@@ -25,8 +25,13 @@ define jss::context($ensure='present',
               $user_enrollment=true,
               $war='ROOT.war'){
   if $ensure == 'present'{
-    package{['tar', 'unzip', 'java1.6', 'tomcat7']:
-      ensure => present,
+    if !defined(Package['tomcat7']){
+      package{['tar',
+                'unzip',
+                'java1.6',
+                'tomcat7']:
+        ensure => present,
+      }
     }
     if $firewall {
       firewall{"100 allow ssh for ${context}":
@@ -34,8 +39,8 @@ define jss::context($ensure='present',
         proto  => tcp,
         action => accept,
       }
-      firewall{"200 allow http-alt (8080) for ${context}":
-        dport       => [8080],
+      firewall{"200 allow http (${http_port}) for ${context}":
+        dport       => $http_port,
         proto       => tcp,
         destination => $::ipaddress,
         action      => accept,
@@ -47,18 +52,22 @@ define jss::context($ensure='present',
         action      => accept,
       }
     }
-    service{'tomcat7':
-      ensure  => running,
-      require => Package['tomcat7'],
+    if !defined(Service['tomcat7']){
+      service{'tomcat7':
+        ensure  => running,
+        require => Package['tomcat7'],
+      }
     }
-    file{"${context}.server.xml":
-      content => template('jss/server.xml.erb'),
-      path    => "${tomcat_dir}/conf/server.xml",
-      owner   => 'tomcat7',
-      group   => 'tomcat7',
-      mode    => '0644',
-      notify  => Service['tomcat7'],
-      require => Package['tomcat7'],
+    if !defined(File['server.xml']){
+      file{'server.xml':
+        content => template('jss/server.xml.erb'),
+        path    => "${tomcat_dir}/conf/server.xml",
+        owner   => 'tomcat7',
+        group   => 'tomcat7',
+        mode    => '0644',
+        notify  => Service['tomcat7'],
+        require => Package['tomcat7'],
+      }
     }
     file{"${context}.war":
       ensure  => present,
@@ -69,8 +78,15 @@ define jss::context($ensure='present',
       source  => "puppet:///modules/jss/${war}",
       require => Package['tomcat7'],
     }
+    #file{"${tomcat_dir}/webapps/${context}":
+    #  ensure  => directory,
+    #  owner   => 'tomcat7',
+    #  group   => 'tomcat7',
+    #  mode    => '0755',
+    #  require => Exec["pause_for_${context}_deploy"],
+    #  }
     exec{"pause_for_${context}_deploy":
-      command => 'sleep 10',
+      command => 'sleep 15',
       path    => '/usr/bin:/bin',
       require => File["${context}.war"],
       creates => "${tomcat_dir}/webapps/${context}",
