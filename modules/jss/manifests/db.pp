@@ -3,70 +3,74 @@
 
 define jss::db($firewall=true,
               $context=$title,
+              $db_addr='localhost',
+              $db_name='jamfsoftware',
               $db_user="${title}user",
               $db_passwd="${title}pw",
               $db_port='3306',
               $db_root_passwd='supersecure',
-              $mysql_addr='',
               $jss_addr='localhost',
+              $tomcat_dir='/var/lib/tomcat7',
               $ensure='present') {
   if $ensure == 'present'{
-    if $mysql_addr == '' {
-      $db_addr = $::ipaddress
-    } else {
-      $db_addr = $mysql_addr
-    }
     if $firewall {
-      if $jss_addr == '%'{
-        firewall{'104 allow mysql':
+      if $jss_addr == 'localhost'{
+        firewall{"300 allow mysql traffic for ${context}":
           dport       => [$db_port],
           proto       => tcp,
-          destination => $db_addr,
+          #destination => $db_addr,
           action      => accept,
         }
       } else {
-        firewall{'104 allow mysql':
+        firewall{"300 allow mysql traffic for ${context}":
           dport       => [$db_port],
           proto       => tcp,
-          source      => $jss_addr,
-          destination => $db_addr,
+          #source      => $jss_addr,
+          #destination => $db_addr,
           action      => accept,
         }
       }
     }
-    class { '::mysql::server':
-      root_password           => $db_root_passwd,
-      remove_default_accounts => true,
+    if !defined(Class['::mysql::server']) {
+      class { '::mysql::server':
+        root_password           => $db_root_passwd,
+        remove_default_accounts => true,
+        override_options        => {'mysqld' => {'bind-address' => $db_addr}},
+      }
+    }
+    exec{"${context}.restart_mysql":
+      command     => '/etc/init.d/mysql restart',
+      refreshonly => true,
+      require     => Service['mysql'],
     }
     mysql::db { $context:
       user     => $db_user,
       password => mysql_password($db_passwd),
       host     => $::fqdn ,
       grant    => ['ALL'],
-      require  => Class['::mysql::server'],
+      require  => Service['mysql'],
     }
-
-    # This should work. For some reason it does not.
-    #mysql_user{"${db_user}@${jss_addr}/${context}":
-    #  ensure               => present,
-    #  password_hash        => mysql_password($db_passwd),
-    #  max_user_connections => '90',
-    #  require              => Class['::mysql::server'],
-    #}
-    #mysql_grant{"${db_user}@${jss_addr}/${context}.*":
-    #  ensure     => present,
-    #  options    => ['GRANT'],
-    #  privileges => ['ALL'],
-    #  table      => "${context}.*",
-    #  user       => "${db_user}@${jss_addr}",
-    #  require    => Class['::mysql::server'],
-    #}
-
-    # This is ugly but it works.
-    exec{'db_grant':
-      command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${context}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
-      path    => '/usr/bin/',
-      require => Class['::mysql::server'],
+    if defined(Service['tomcat7']){
+      exec{"${context}_db_grant":
+        command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${db_name}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
+        path    => '/usr/bin/',
+        notify  => Service['tomcat7'],
+        require => Mysql::Db[$context],
+        creates => "${tomcat_dir}/webapps/${context}/.grants",
+      }
+      file{"${context}.grants":
+        ensure  => present,
+        path    => "${tomcat_dir}/webapps/${context}/.grants",
+        content => 'keytar',
+        require => Exec["${context}_db_grant"],
+      }
+    } else {
+        exec{"${context}_db_grant":
+          command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${context}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
+          path    => '/usr/bin/',
+          require => Mysql::Db[$context],
+          notify  => Exec["${context}.restart_mysql"],
+      }
     }
   }
 }

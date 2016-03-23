@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Server port="8005" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.core.JasperListener" />
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+  <GlobalNamingResources>
+    <Resource name="UserDatabase" auth="Container"
+              type="org.apache.catalina.UserDatabase"
+              description="User database that can be updated and saved"
+              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+              pathname="conf/tomcat-users.xml" />
+  </GlobalNamingResources>
+  <Service name="Catalina">
+    <Executor name="tomcatThreadPool" namePrefix="catalina-exec-"
+        maxThreads="<%= @tomcat_max_threads %>" minSpareThreads="4"/>
+    <% if @http == true -%>
+        <Connector executor="tomcatThreadPool"
+            port="<%= @http_port %>"
+            <% if @loadbalanced == true -%>
+            proxyPort="8443"
+            scheme="https"
+            <% end -%>
+            protocol="HTTP/1.1"
+            connectionTimeout="20000"
+            redirectPort="<%= @https_redirect_port %>" />
+    <% end -%>
+    <% if @https == true -%>
+        <Connector port="<%= @https_port %>"
+            protocol="HTTP/1.1"
+            SSLEnabled="true"
+            executor="tomcatThreadPool"
+            scheme="https"
+            secure="true"
+            clientAuth="false"
+            keystoreFile="<%= @keystore_path %>"
+            keystorePass="<%= @keystore_pass %>"
+            sslProtocol="TLSv1.2"
+            sslEnabledProtocols="TLSv1.2,TLSv1.1,TLSv1"
+            server="Apache"
+            ciphers="TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+            TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
+            TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+            TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
+            TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+            TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+            TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
+            TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
+            TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+            TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+            TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
+            TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA" />
+    <% end -%>
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase"/>
+      </Realm>
+      <Host name="localhost"  appBase="webapps"
+            unpackWARs="true" autoDeploy="true">
+
+        <% if @loadbalanced == true -%>
+            <Valve className="org.apache.catalina.valves.RemoteIpValve" />
+            <Valve className="org.apache.catalina.valves.AccessLogValve"
+                requestAttributesEnabled="true"
+                directory="logs"
+                prefix="localhost_access_log."
+                suffix=".txt"
+                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+        <% end -%>
+        <% if @loadbalanced == false -%>
+            <Valve className="org.apache.catalina.valves.AccessLogValve"
+                    directory="logs"
+                    prefix="localhost_access_log."
+                    suffix=".txt"
+                    pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+        <% end -%>
+      </Host>
+    </Engine>
+  </Service>
+</Server>

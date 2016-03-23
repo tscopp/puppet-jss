@@ -56,13 +56,23 @@ class jss($firewall=true,
   package { 'unzip':
     ensure => installed
   }
-
+  if $firewall {
+    firewall{'101 allow ssh':
+      dport  => [22],
+      proto  => tcp,
+      action => accept,
+    }
+  }
 
   jss::context{'production':
-    ensure     => present,
-    firewall   => true,
-    db_user   => 'produser',
-    db_passwd => 'prodpw',
+    ensure        => present,
+    api           => false,
+    firewall      => true,
+    http          => true,
+    https         => false,
+    keystore_pass => 'Jamf1234',
+    db_user       => 'produser',
+    db_passwd     => 'prodpw',
   }
   jss::db{'production':
     ensure    => present,
@@ -70,6 +80,27 @@ class jss($firewall=true,
     db_user   => 'produser',
     db_passwd => 'prodpw',
   }
+
+  #jss::context{'development':
+  #  ensure    => present,
+  #  firewall  => true,
+  #}
+  #jss::db{'development':
+  #  ensure    => present,
+  #  firewall  => true,
+  #}
+  #jss::context{'testing':
+  #  ensure => present,
+  #}
+  #jss::db{'testing':
+  #  ensure => present,
+  #}
+  #jss::context{'development':
+  #  ensure => present,
+  #}
+  #jss::db{'development':
+  #  ensure => present,
+  #}
 
   #class{ 'jss::jss':
   #  firewall => true,

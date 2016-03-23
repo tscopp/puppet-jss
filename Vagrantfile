@@ -11,7 +11,22 @@ Vagrant.configure(2) do |config|
         jss.vm.provision "puppet" do |puppet|
             puppet.facter = {
                 "vagrant" => true,
-                "server_role" => 'jss',
+                "role" => 'jss',
+            }
+            #puppet.options = "--verbose --debug"
+            puppet.manifests_path="manifests/"
+            puppet.manifest_file="site.pp"
+            puppet.module_path= "modules/"
+        end
+    end
+    config.vm.define "db" do |db|
+        db.vm.box = "precise64"
+        db.vm.hostname= "db.berkeley.edu"
+        db.vm.network "private_network", ip: "192.168.56.102"
+        db.vm.provision "puppet" do |puppet|
+            puppet.facter = {
+                "vagrant" => true,
+                "role" => 'db',
             }
             #puppet.options = "--verbose --debug"
             puppet.manifests_path="manifests/"

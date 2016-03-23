@@ -185,7 +185,7 @@ node default{
     }
 
     jss::db{'super_mega_broken':
-        firewall=true,
+        ensure='present'
         context=$title,
         db_addr='localhost',
         db_name='jamfsoftware',
@@ -193,9 +193,9 @@ node default{
         db_passwd="${title}pw",
         db_port='3306',
         db_root_passwd='supersecure',
+        firewall=true,
         jss_addr='localhost',
         tomcat_dir='/var/lib/tomcat7',
-        ensure='present'
     }
 ```
 #### Firewall
