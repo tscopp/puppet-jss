@@ -93,6 +93,25 @@ node default{
 
 ### SSL Enabled
 
+First we'll need to bring up a plain ol' http JSS. We'll disable the API and user enrollment just for kicks.
+```ruby
+node default{
+    jss::context{'production':
+        ensure          => present,
+        api             => false,
+        db_user         => 'jamfsoftware',
+        db_passwd       => 'jamfsw03',
+        http            => true,
+        https           => false,
+        user_enrollment => false,
+    }
+    jss::db{'production':
+        ensure => present,
+        db_user         => 'jamfsoftware',
+        db_passwd       => 'jamfsw03',
+    }
+}
+```
 SSL and non-SSL hosts can NOT exist on the same tomcat instance. If you'd like SSL certs you should create a keystore:
 
 ```bash
