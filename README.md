@@ -184,6 +184,20 @@ node default{
         war='ROOT.war'
     }
 
+    jss::db{'super_mega_broken':
+        firewall=true,
+        context=$title,
+        db_addr='localhost',
+        db_name='jamfsoftware',
+        db_user="${title}user",
+        db_passwd="${title}pw",
+        db_port='3306',
+        db_root_passwd='supersecure',
+        jss_addr='localhost',
+        tomcat_dir='/var/lib/tomcat7',
+        ensure='present'
+    }
+```
 #### Firewall
 By default the firewall will allow:
 - 22 on all nodes
@@ -194,6 +208,7 @@ License
 
 
 Contact
+
 -------
 
 
