@@ -38,12 +38,12 @@ node default{
 ```
 
 ```bash
-vagrant up jss
+vagrant up default
 ```
 
 The module will assign very weak (un:${context_name}user pw:${context_name}pw) credentials unless otherwise specified. Let's set our own credentials and separate the hosts while we're at it. In order to maintain functionality of the firewall (see below) we must specify both $jss_addr and $db_addr.
 ```ruby
-node jss-01 {
+node jss{
     jss::context{'production':
         ensure    => present,
         db_addr   => '192.168.56.101',
@@ -51,7 +51,7 @@ node jss-01 {
         db_user   => 'jamfuser',
     }
 }
-node db-01 {
+node db{
     jss::db{'production':
         ensure    => present,
         db_passwd => 'jamfsw03',
@@ -81,10 +81,13 @@ node default{
         ensure   => present,
     }
 ```
+```bash
+vagrant up default
+```
 
 ### Clustered
 ```ruby
-node jss_01{
+node jss01{
     jss::context{'jssprod01':
         ensure    => present,
         context   => 'production',
@@ -92,7 +95,7 @@ node jss_01{
         db_passwd => 'jamfsw03',
     }
 }
-node jss_02 {
+node jss02 {
     jss::context{'jssprod02':
         ensure   => present,
         context  => 'production',
@@ -108,6 +111,11 @@ node db {
         jss_addr => ['192.168.56.101',
                         '192.168.56.102',],
     }
+```
+```bash
+vagrant up db
+vagrant up jss01
+vagrant up jss02
 ```
 
 ### SSL Enabled
