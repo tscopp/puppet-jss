@@ -205,14 +205,10 @@ By default the firewall will allow:
 - 8080 and 8443 on the JSS nodes.
 License
 -------
+Apache License 2.0
 
 
 Contact
-
 -------
+tscopp@berkeley.edu
 
-
-Support
--------
-
-Please log tickets and issues at our [Projects site](http://projects.example.com)
