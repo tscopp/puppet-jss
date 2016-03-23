@@ -8,14 +8,14 @@ git clone git@github.com:tscopp/puppet-jss.git
 cp ROOT.war puppet-jss/modules/jss/files/
 cd puppet-jss
 
-## All in one, multicontext -- http://${ip}:8080
+## All in one, multicontext -- http://${ip}:8080/production, http://${ip}/development
 vagrant up defualt
 
-## Separate hosts -- http://${ip}:8081
+## Separate hosts -- http://${ip}:8081/dev
 vagrant up db
 vagrant up jss
 
-## Clustered -- http://${ip}:8082, http://${ip}:8083
+## Clustered -- http://${ip}:8082/production, http://${ip}:8083/production
 vagrant up db
 vagrant up jss01
 vagrant up jss02
