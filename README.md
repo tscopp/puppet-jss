@@ -5,6 +5,8 @@ Deployment of JAMF Software's JSS is, by no means, an unmanageable task. There a
 ## TL;DR:
 ```bash
 git clone git@github.com:tscopp/puppet-jss.git
+cp ROOT.war puppet-jss/modules/jss/files/
+cd puppet-jss
 
 ## All in one, multicontext -- http://${ip}:8080
 vagrant up defualt
