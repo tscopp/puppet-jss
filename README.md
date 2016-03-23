@@ -35,7 +35,6 @@ node jss-01 {
         db_addr   => '192.168.56.101',
         db_passwd => 'jamfsw03',
         db_user   => 'jamfuser',
-        firewall  => true,
     }
 }
 node db-01 {
@@ -43,7 +42,6 @@ node db-01 {
         ensure    => present,
         db_passwd => 'jamfsw03',
         db_user   => 'jamfuser',
-        firewall  => true,
         jss_addr  => '192.168.56.102',
     }
 }
@@ -58,38 +56,38 @@ vagrant up jss
 node default{
     jss::context{'production':
         ensure   => present,
-        firewall => true,
     }
     jss::db{'production':
         ensure   => present,
-        firewall => true,
     }
     jss::context{'development':
         ensure   => present,
-        firewall => true,
     }
     jss::db{'development':
         ensure   => present,
-        firewall => true,
     }
 ```
 
 ### Clustered
 ```ruby
     jss::context{'jssprod01':
-        ensure   => present,
-        context  => 'production',
-        firewall => true,
+        ensure    => present,
+        context   => 'production',
+        db_user   => 'jamfsoftware',
+        db_passwd => 'jamfsw03',
     }
     jss::db{'production':
         ensure   => present,
-        context  => 'production',
-        firewall => true,
+        db_user   => 'jamfsoftware',
+        db_passwd => 'jamfsw03',
+        jss_addr => ['192.168.56.101',
+                        '192.168.56.102',],
     }
     jss::context{'jssprod02':
         ensure   => present,
         context  => 'production',
-        firewall => true,
+        db_user   => 'jamfsoftware',
+        db_passwd => 'jamfsw03',
     }
 ```
 
