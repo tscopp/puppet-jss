@@ -2,9 +2,21 @@
 
 Deployment of JAMF Software's JSS is, by no means, an unmanageable task. There are, however, a lot of steps. This module seeks to resolve that.
 
-Install the module:
+## TL;DR:
 ```bash
-puppet module install tscopp-jss -i /etc/puppet/modules/
+git clone git@github.com:tscopp/puppet-jss.git
+
+## All in one, multicontext
+vagrant up defualt
+
+## Separate hosts
+vagrant up db
+vagrant up jss
+
+## Clustered
+vagrant up db
+vagrant up jss01
+vagrant up jss02
 ```
 
 ## Deployment
@@ -70,24 +82,29 @@ node default{
 
 ### Clustered
 ```ruby
+node jss_01{
     jss::context{'jssprod01':
         ensure    => present,
         context   => 'production',
         db_user   => 'jamfsoftware',
         db_passwd => 'jamfsw03',
     }
+}
+node jss_02 {
+    jss::context{'jssprod02':
+        ensure   => present,
+        context  => 'production',
+        db_user   => 'jamfsoftware',
+        db_passwd => 'jamfsw03',
+    }
+}
+node db {
     jss::db{'production':
         ensure   => present,
         db_user   => 'jamfsoftware',
         db_passwd => 'jamfsw03',
         jss_addr => ['192.168.56.101',
                         '192.168.56.102',],
-    }
-    jss::context{'jssprod02':
-        ensure   => present,
-        context  => 'production',
-        db_user   => 'jamfsoftware',
-        db_passwd => 'jamfsw03',
     }
 ```
 
