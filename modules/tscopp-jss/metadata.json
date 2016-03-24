@@ -1,0 +1,32 @@
+{
+  "name": "tscopp-jss",
+  "version": "0.1.8",
+  "author": "Timothy Scoppetta (tscopp)",
+  "summary": "Installs, configures, and manages the JAMF JSS service and supporting datastores (MySQL)",
+  "license": "Apache-2.0",
+  "source": "git://github.com/tscopp/puppet-jss",
+  "project_page": "http://github.com/tscopp-jss/",
+  "issues_url": "https://github.com/tscopp-jss/issues",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.11.0 < 5.0.0"},
+    {"name":"puppetlabs/mysql","version_requirement":">= 3.7.0 < 4.0.0"},
+    {"name":"puppetlabs/firewall","version_requirement":">= 1.8.0 < 2.0.0"}
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": "12.04",
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">= 3.0.0 < 2015.4.0"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": ">= 3.0.0 < 5.0.0"
+    }
+  ],
+  "description": "JSS module"
+}
