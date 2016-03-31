@@ -57,20 +57,20 @@ define jss::db($firewall=true,
       $jss01 = $jss_addr[0]
       $jss02 = $jss_addr[1]
       exec{"${context}@${jss01}_db_grant":
-          command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${context}.* to ${db_user}@${jss01} identified by '${db_passwd}';\"",
+          command => "sudo mysql -u root -p'${db_root_passwd}' -e \"grant all on ${context}.* to ${db_user}@${jss01} identified by '${db_passwd}';\"",
           path    => '/usr/bin/',
           require => Mysql::Db[$context],
           notify  => Exec["${context}.restart_mysql"],
       }
       exec{"${context}@${jss02}_db_grant":
-          command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${context}.* to ${db_user}@${jss02} identified by '${db_passwd}';\"",
+          command => "sudo mysql -u root -p'${db_root_passwd}' -e \"grant all on ${context}.* to ${db_user}@${jss02} identified by '${db_passwd}';\"",
           path    => '/usr/bin/',
           require => Mysql::Db[$context],
           notify  => Exec["${context}.restart_mysql"],
       }
     } else {
       exec{"${context}_db_grant":
-          command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${context}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
+          command => "sudo mysql -u root -p'${db_root_passwd}' -e \"grant all on ${context}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
           path    => '/usr/bin/',
           require => Mysql::Db[$context],
           notify  => Exec["${context}.restart_mysql"],
