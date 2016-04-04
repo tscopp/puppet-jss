@@ -9,9 +9,9 @@ exec{'apt-update':
 # Multi-Context all-in-one
 node default{
   jss::context{'production':
-    ensure          => present,
-    api             => false,
-    user_enrollment => false,
+    ensure           => present,
+    api              => false,
+    user_enrollment  => false,
   }
   jss::db{'production':
     ensure => present,
@@ -36,7 +36,7 @@ node jss {
   }
 }
 
-# Single-context, clustered, backed by a separate DB host
+# Single-context, clustered, external DB host
 node jss01{
   jss::context{'jssprod01':
     ensure    => present,
@@ -61,13 +61,15 @@ node db {
     db_addr   => '192.168.56.104',
     db_user   => 'jamfsoftware',
     db_passwd => 'jamfsw03',
-    jss_addr  => '192.168.56.102',
+    jss_addr  => ['192.168.56.102',
+                  '192.168.56.103'],
   }
   jss::db{'dev':
     ensure    => present,
     db_addr   => '192.168.56.104',
     db_passwd => 'devpw',
     db_user   => 'devuser',
-    jss_addr  => '192.168.56.101'
+    jss_addr  => ['192.168.56.102',
+                  '192.168.56.103'],
   }
 }
