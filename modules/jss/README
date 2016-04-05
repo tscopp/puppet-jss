@@ -9,6 +9,8 @@ Before the module will function you must download the JSSInstaller.zip from
 JAMFNation, extract it, and place the ROOT.war in the ${puppet}/modules/jss/files/
 directory.
 
+At present clustering is limited to a maximum of two nodes.
+
 TL;DR
 -----
 puppet module install tscopp-jss
@@ -119,7 +121,7 @@ node default {
     }
 }
 
-All parameters 
+All parameters
 --------------
 Don't specify all the paramters at once, this section is merely for reference.
 
