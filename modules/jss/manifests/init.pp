@@ -40,8 +40,6 @@ class jss($firewall=true,
         $db_user='jss',
         $db_passwd='jsspw',
         $jss_addr='%',) {
-
-
   exec{'apt-update':
       command => '/usr/bin/apt-get update'
   }
@@ -56,14 +54,6 @@ class jss($firewall=true,
   package { 'unzip':
     ensure => installed
   }
-  if $firewall {
-    firewall{'101 allow ssh':
-      dport  => [22],
-      proto  => tcp,
-      action => accept,
-    }
-  }
-
   jss::context{'production':
     ensure        => present,
     api           => false,

@@ -1,7 +1,13 @@
 JSS
 ---
 
-This module has ONLY been tested on Ubuntu 12.04.
+This module will install an configure the JAMF Software JSS web application
+and supporting database services. See www.github.com/tscopp/puppet-jss for
+vagrant environments and further documentation.
+
+Before the module will function you must download the JSSInstaller.zip from
+JAMFNation, extract it, and place the ROOT.war in the ${puppet}/modules/jss/files/
+directory.
 
 TL;DR
 -----
@@ -69,8 +75,7 @@ node db {
         ensure   => present,
         db_user   => 'jamfsoftware',
         db_passwd => 'jamfsw03',
-        jss_addr => ['192.168.56.101',
-        '192.168.56.102',],
+        jss_addr => '192.168.56.101',
     }
 }
 
@@ -119,44 +124,44 @@ All parameters
 Don't specify all the paramters at once, this section is merely for reference.
 
 node default{
-jss::context{'super_mega_broken'
-ensure='present',
-api=true,
-context = $title,
-db_addr='localhost',
-db_port='3306',
-db_user="${title}user",
-db_passwd="${title}pw",
-db_min_pool='5',
-db_max_pool='90',
-firewall=true,
-http=true,
-http_port='8080',
-http_proxy_port='8443',
-https=false,
-https_port='8443',
-keystore_path='/var/lib/tomcat7/keystore.jks',
-keystore_pass='',
-loadbalanced=false,
-log_path='/var/lib/tomcat7/logs',
-tomcat_dir='/var/lib/tomcat7',
-tomcat_max_threads='450',
-user_enrollment=true,
-war='ROOT.war'
-}
-
-jss::db{'super_mega_broken':
-ensure='present'
-context=$title,
-db_addr='localhost',
-db_name='jamfsoftware',
-db_user="${title}user",
-db_passwd="${title}pw",
-db_port='3306',
-db_root_passwd='supersecure',
-firewall=true,
-jss_addr='localhost',
-tomcat_dir='/var/lib/tomcat7',
+    jss::context{'super_mega_broken'
+        ensure='present',
+        api=true,
+        context = $title,
+        db_addr='localhost',
+        db_port='3306',
+        db_user="${title}user",
+        db_passwd="${title}pw",
+        db_min_pool='5',
+        db_max_pool='90',
+        firewall=true,
+        http=true,
+        http_port='8080',
+        http_proxy_port='8443',
+        https=false,
+        https_port='8443',
+        keystore_path='/var/lib/tomcat7/keystore.jks',
+        keystore_pass='',
+        loadbalanced=false,
+        log_path='/var/lib/tomcat7/logs',
+        tomcat_dir='/var/lib/tomcat7',
+        tomcat_max_threads='450',
+        user_enrollment=true,
+        war='ROOT.war'
+    }
+    jss::db{'super_mega_broken':
+        ensure='present'
+        context=$title,
+        db_addr='localhost',
+        db_name='jamfsoftware',
+        db_user="${title}user",
+        db_passwd="${title}pw",
+        db_port='3306',
+        db_root_passwd='supersecure',
+        firewall=true,
+        jss_addr='localhost',
+        tomcat_dir='/var/lib/tomcat7',
+    }
 }
 
 Firewall

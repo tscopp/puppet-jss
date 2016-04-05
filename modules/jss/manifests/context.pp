@@ -2,6 +2,7 @@
 # Author  : tscopp@berkeley.edu
 
 define jss::context($ensure='present',
+              $activation_code='',
               $api=true,
               $context = $title,
               $db_addr='localhost',
@@ -16,6 +17,7 @@ define jss::context($ensure='present',
               $http_proxy_port='8443',
               $https=false,
               $https_port='8443',
+              $institution_name='',
               $keystore_path='/var/lib/tomcat7/keystore.jks',
               $keystore_pass='',
               $loadbalanced=false,
@@ -24,6 +26,9 @@ define jss::context($ensure='present',
               $tomcat_max_threads='450',
               $user_enrollment=true,
               $war='ROOT.war'){
+  #input validation
+  validate_re($ensure, '^(present|absent)$',
+  "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
   if $ensure == 'present'{
     if !defined(Package['tomcat7']){
       package{['tar',
@@ -115,6 +120,13 @@ define jss::context($ensure='present',
         force   => true,
         recurse => true,
         notify  => Service['tomcat7'],
+      }
+    }
+    if $activation_code != '' {
+      exec{"inject_${context}_activation_code":
+        command => "mysql -u ${db_user} -p${db_passwd} --host ${db_addr} -e 'INSERT into ${context}.activation_code (activation_code, institution_name) VALUES ('${activation_code}', '${institution_name}')",
+        path    => '/usr/bin:/bin',
+        require => File["${context}.DataBase.xml"],
       }
     }
     if $https {

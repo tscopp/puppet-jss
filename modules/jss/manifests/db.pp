@@ -12,30 +12,20 @@ define jss::db($firewall=true,
               $jss_addr='localhost',
               $tomcat_dir='/var/lib/tomcat7',
               $ensure='present') {
+  #input validation
+  validate_re($ensure, '^(present|absent)$',
+  "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
   if $ensure == 'present'{
-    if $firewall {
-      if $jss_addr == 'localhost'{
-        firewall{"300 allow mysql traffic for ${context}":
-          dport       => [$db_port],
-          proto       => tcp,
-          #destination => $db_addr,
-          action      => accept,
-        }
-      } else {
-        firewall{"300 allow mysql traffic for ${context}":
-          dport       => [$db_port],
-          proto       => tcp,
-          #source      => $jss_addr,
-          #destination => $db_addr,
-          action      => accept,
-        }
-      }
-    }
     if !defined(Class['::mysql::server']) {
       class { '::mysql::server':
         root_password           => $db_root_passwd,
         remove_default_accounts => true,
         override_options        => {'mysqld' => {'bind-address' => $db_addr}},
+      }
+    }
+    if !defined(Service['mysql']) {
+      service{'mysql':
+        ensure => running,
       }
     }
     exec{"${context}.restart_mysql":
@@ -50,26 +40,70 @@ define jss::db($firewall=true,
       grant    => ['ALL'],
       require  => Service['mysql'],
     }
-    if defined(Service['tomcat7']){
-      exec{"${context}_db_grant":
-        command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${db_name}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
-        path    => '/usr/bin/',
-        notify  => Service['tomcat7'],
-        require => Mysql::Db[$context],
-        creates => "${tomcat_dir}/webapps/${context}/.grants",
-      }
-      file{"${context}.grants":
-        ensure  => present,
-        path    => "${tomcat_dir}/webapps/${context}/.grants",
-        content => 'keytar',
-        require => Exec["${context}_db_grant"],
-      }
-    } else {
-        exec{"${context}_db_grant":
-          command => "sudo mysql -u root -p${db_root_passwd} -e \"grant all on ${context}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
+    if is_array($jss_addr) {
+      $jss01 = $jss_addr[0]
+      $jss02 = $jss_addr[1]
+      exec{"${context}@${jss01}_db_grant":
+          command => "sudo mysql -u root -p'${db_root_passwd}' -e \"grant all on ${context}.* to ${db_user}@${jss01} identified by '${db_passwd}';\"",
           path    => '/usr/bin/',
           require => Mysql::Db[$context],
           notify  => Exec["${context}.restart_mysql"],
+      }
+      exec{"${context}@${jss02}_db_grant":
+          command => "sudo mysql -u root -p'${db_root_passwd}' -e \"grant all on ${context}.* to ${db_user}@${jss02} identified by '${db_passwd}';\"",
+          path    => '/usr/bin/',
+          require => Mysql::Db[$context],
+          notify  => Exec["${context}.restart_mysql"],
+      }
+      if $firewall {
+        if $jss_addr == 'localhost'{
+          firewall{"300 allow mysql traffic for ${context}":
+            dport       => [$db_port],
+            proto       => tcp,
+            destination => $db_addr,
+            action      => accept,
+          }
+        } else {
+          firewall{"300 allow mysql traffic for ${jss01}@${context}":
+            dport       => [$db_port],
+            proto       => tcp,
+            source      => $jss01,
+            destination => "${db_addr}/32",
+            action      => accept,
+          }
+          firewall{"301 allow mysql traffic for ${jss02}@${context}":
+            dport       => [$db_port],
+            proto       => tcp,
+            source      => $jss02,
+            destination => "${db_addr}/32",
+            action      => accept,
+          }
+        }
+      }
+    } else {
+      exec{"${context}_db_grant":
+          command => "sudo mysql -u root -p'${db_root_passwd}' -e \"grant all on ${context}.* to ${db_user}@${jss_addr} identified by '${db_passwd}';\"",
+          path    => '/usr/bin/',
+          require => Mysql::Db[$context],
+          notify  => Exec["${context}.restart_mysql"],
+      }
+      if $firewall {
+        if $jss_addr == 'localhost'{
+          firewall{"300 allow mysql traffic for ${context}":
+            dport       => [$db_port],
+            proto       => tcp,
+            destination => $db_addr,
+            action      => accept,
+          }
+        } else {
+          firewall{"300 allow mysql traffic for ${context}":
+            dport       => [$db_port],
+            proto       => tcp,
+            source      => $jss_addr,
+            destination => $db_addr,
+            action      => accept,
+          }
+        }
       }
     }
   }
