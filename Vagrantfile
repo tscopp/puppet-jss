@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
     config.vm.define "default" do |default|
-        default.vm.box = "hashicorp/precise64"
+        default.vm.box = "ubuntu/precise64"
         default.vm.hostname= "default.berkeley.edu"
         default.vm.network "private_network", ip: "192.168.56.100"
         default.vm.network "forwarded_port", guest: 8080, host: 8080
@@ -20,7 +20,7 @@ Vagrant.configure(2) do |config|
         end
     end
     config.vm.define "jss" do |jss|
-        jss.vm.box = "hashicorp/precise64"
+        jss.vm.box = "ubuntu/precise64"
         jss.vm.hostname= "jss.berkeley.edu"
         jss.vm.network "private_network", ip: "192.168.56.101"
         jss.vm.network "forwarded_port", guest: 8080, host: 8081
@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
         end
     end
     config.vm.define "jss01" do |jss01|
-        jss01.vm.box = "hashicorp/precise64"
+        jss01.vm.box = "ubuntu/precise64"
         jss01.vm.hostname= "jss01.berkeley.edu"
         jss01.vm.network "private_network", ip: "192.168.56.102"
         jss01.vm.network "forwarded_port", guest: 8080, host: 8082
@@ -55,7 +55,7 @@ Vagrant.configure(2) do |config|
         end
     end
     config.vm.define "jss02" do |jss02|
-        jss02.vm.box = "hashicorp/precise64"
+        jss02.vm.box = "ubuntu/precise64"
         jss02.vm.hostname= "jss02.berkeley.edu"
         jss02.vm.network "private_network", ip: "192.168.56.103"
         jss02.vm.network "forwarded_port", guest: 8080, host: 8083
@@ -72,7 +72,7 @@ Vagrant.configure(2) do |config|
         end
     end
     config.vm.define "db" do |db|
-        db.vm.box = "hashicorp/precise64"
+        db.vm.box = "ubuntu/precise64"
         db.vm.hostname= "db.berkeley.edu"
         db.vm.network "private_network", ip: "192.168.56.104"
         db.vm.provision "puppet" do |puppet|
