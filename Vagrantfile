@@ -8,6 +8,9 @@ Vagrant.configure(2) do |config|
         default.vm.network "private_network", ip: "192.168.56.100"
         default.vm.network "forwarded_port", guest: 8080, host: 8080
         default.vm.network "forwarded_port", guest: 8443, host: 8443
+        default.vm.provider :virtualbox do | v |
+            v.memory = 1024
+        end
         default.vm.provision "puppet" do |puppet|
             puppet.facter = {
                 "vagrant" => true,
