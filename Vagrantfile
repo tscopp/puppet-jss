@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
     config.vm.define "default" do |default|
-        default.vm.box = "hashicorp/precise64"
+        default.vm.box = "ubuntu/precise64"
         default.vm.hostname= "default.berkeley.edu"
         default.vm.network "private_network", ip: "192.168.56.100"
         default.vm.network "forwarded_port", guest: 8080, host: 8080
