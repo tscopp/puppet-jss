@@ -25,7 +25,9 @@ define jss::context($ensure='present',
               $tomcat_dir='/var/lib/tomcat7',
               $tomcat_max_threads='450',
               $user_enrollment=true,
-              $war='ROOT.war'){
+              $war='ROOT.war',
+              $war_url=''){
+
   #input validation
   validate_re($ensure, '^(present|absent)$',
   "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
@@ -34,7 +36,8 @@ define jss::context($ensure='present',
       package{['tar',
                 'unzip',
                 'java1.6',
-                'tomcat7']:
+                'tomcat7',
+                'wget']:
         ensure => present,
       }
     }
@@ -74,22 +77,23 @@ define jss::context($ensure='present',
         require => Package['tomcat7'],
       }
     }
-    file{"${context}.war":
-      ensure  => present,
-      path    => "${tomcat_dir}/webapps/${context}.war",
-      owner   => 'tomcat7',
-      group   => 'tomcat7',
-      mode    => '0644',
-      source  => "puppet:///modules/jss/${war}",
-      require => Package['tomcat7'],
+    if $war_url == ''{
+      file{"${context}.war":
+        ensure  => present,
+        path    => "${tomcat_dir}/webapps/${context}.war",
+        owner   => 'tomcat7',
+        group   => 'tomcat7',
+        mode    => '0644',
+        source  => "puppet:///modules/jss/${war}",
+        require => Package['tomcat7'],
+      }
+    } else {
+      exec{"retrieve_${context}.${war}":
+        command => "wget -O ${tomcat_dir}/webapps/${context} ${war_url}",
+        path    => '/usr/bin:/bin',
+        creates => "${tomcat_dir}/webapps/${context}.war",
+      }
     }
-    #file{"${tomcat_dir}/webapps/${context}":
-    #  ensure  => directory,
-    #  owner   => 'tomcat7',
-    #  group   => 'tomcat7',
-    #  mode    => '0755',
-    #  require => Exec["pause_for_${context}_deploy"],
-    #  }
     exec{"pause_for_${context}_deploy":
       command => 'sleep 15',
       path    => '/usr/bin:/bin',
