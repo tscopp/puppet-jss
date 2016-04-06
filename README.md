@@ -3,9 +3,13 @@
 Deployment of JAMF Software's JSS is, by no means, an unmanageable task. There are, however, a lot of steps. This module seeks to resolve that.
 
 ## TL;DR:
+Go to "My Products - JAMF Nation" (https://my.jamfsoftware.com/products.html) and authenticate.
+Download the desired version of the JSS Manual Installation.
+
 ```bash
 git clone git@github.com:tscopp/puppet-jss.git
-cp ROOT.war puppet-jss/modules/jss/files/
+unzip JSSInstallationX.X.zip
+cp JSSInstallation/JSS Components/ROOT.war puppet-jss/modules/jss/files/
 cd puppet-jss
 
 ## All in one, multicontext -- http://${ip}:8080/production, http://${ip}/development
