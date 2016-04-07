@@ -9,15 +9,17 @@ exec{'apt-update':
 # Multi-Context all-in-one
 node default{
   jss::context{'production':
-    ensure           => present,
-    api              => false,
-    user_enrollment  => false,
+    ensure          => present,
+    api             => false,
+    user_enrollment => false,
+    war_url         => 'http://internal_web/jss982.war'
   }
   jss::db{'production':
-    ensure => present,
+    ensure  => present,
   }
   jss::context{'development':
-    ensure => present,
+    ensure  => present,
+    war_url => 'http://internal_web/jss99.war'
   }
   jss::db{'development':
     ensure => present,
@@ -32,7 +34,7 @@ node jss {
     db_addr   => '192.168.56.104',
     db_passwd => 'devpw',
     db_user   => 'devuser',
-    firewall  => false,
+    war_url   => 'http://internal_web/jss99.war'
   }
 }
 
@@ -44,6 +46,7 @@ node jss01{
     db_addr   => '192.168.56.104',
     db_passwd => 'jamfsw03',
     db_user   => 'jamfsoftware',
+    war_url   => 'http://internal_web/jss982.war'
   }
 }
 node jss02 {
@@ -53,6 +56,7 @@ node jss02 {
     db_addr   => '192.168.56.104',
     db_user   => 'jamfsoftware',
     db_passwd => 'jamfsw03',
+    war_url   => 'http://internal_web/jss982.war'
   }
 }
 node db {

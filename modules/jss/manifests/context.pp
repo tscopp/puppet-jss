@@ -87,18 +87,26 @@ define jss::context($ensure='present',
         source  => "puppet:///modules/jss/${war}",
         require => Package['tomcat7'],
       }
+      exec{"pause_for_${context}_deploy":
+        command => 'sleep 15',
+        path    => '/usr/bin:/bin',
+        require => File["${context}.war"],
+        creates => "${tomcat_dir}/webapps/${context}",
+      }
     } else {
       exec{"retrieve_${context}.${war}":
-        command => "wget -O ${tomcat_dir}/webapps/${context} ${war_url}",
-        path    => '/usr/bin:/bin',
-        creates => "${tomcat_dir}/webapps/${context}.war",
+        command   => "wget -O ${tomcat_dir}/webapps/${context}.war ${war_url}",
+        path      => '/usr/bin:/bin',
+        logoutput => on_failure,
+        creates   => "${tomcat_dir}/webapps/${context}.war",
+        require   => Package['tomcat7'],
       }
-    }
-    exec{"pause_for_${context}_deploy":
-      command => 'sleep 15',
-      path    => '/usr/bin:/bin',
-      require => File["${context}.war"],
-      creates => "${tomcat_dir}/webapps/${context}",
+      exec{"pause_for_${context}_deploy":
+        command => 'sleep 15',
+        path    => '/usr/bin:/bin',
+        require => Exec["retrieve_${context}.${war}"],
+        creates => "${tomcat_dir}/webapps/${context}",
+      }
     }
     file{"${context}.DataBase.xml":
       content => template('jss/DataBase.xml.erb'),
