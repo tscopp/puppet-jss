@@ -33,7 +33,8 @@ Very little is required to get a fully functional JSS running on port 8080 suppo
 ```ruby
 node default{
     jss::context{'production':
-        ensure   => present,
+        ensure  => present,
+        war_url => 'http://internal_web/jss982.war',
     }
     jss::db{'production':
         ensure   => present,
