@@ -13,7 +13,7 @@ cp JSSInstallation/JSS Components/ROOT.war puppet-jss/modules/jss/files/
 cd puppet-jss
 
 ## All in one, multicontext -- http://${ip}:8080/production, http://${ip}/development
-vagrant up defualt
+vagrant up default
 
 ## Separate hosts -- http://${ip}:8081/dev
 vagrant up db
