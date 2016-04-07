@@ -49,10 +49,13 @@ The module will assign very weak (un:${context_name}user pw:${context_name}pw) c
 ```ruby
 node jss{
     jss::context{'production':
-        ensure    => present,
-        db_addr   => '192.168.56.101',
-        db_passwd => 'jamfsw03',
-        db_user   => 'jamfuser',
+        ensure          => present,
+        api             => false,
+        db_addr         => '192.168.56.101',
+        db_passwd       => 'jamfsw03',
+        db_user         => 'jamfuser',
+        user_enrollment => true,
+        war_url         => 'http://internal_web/jss982.war',
     }
 }
 node db{
@@ -73,16 +76,18 @@ vagrant up jss
 ```ruby
 node default{
     jss::context{'production':
-        ensure   => present,
+        ensure  => present,
+        war_url => 'http://internal_web/jss982.war',
     }
     jss::db{'production':
-        ensure   => present,
+        ensure => present,
     }
     jss::context{'development':
-        ensure   => present,
+        ensure  => present,
+        war_url => 'http://internal_web/jss99.war',
     }
     jss::db{'development':
-        ensure   => present,
+        ensure => present,
     }
 ```
 ```bash
@@ -97,22 +102,24 @@ node jss01{
         context   => 'production',
         db_user   => 'jamfsoftware',
         db_passwd => 'jamfsw03',
+        war_url   => 'http://internal_web/jss982.war',
     }
 }
 node jss02 {
     jss::context{'jssprod02':
-        ensure   => present,
-        context  => 'production',
+        ensure    => present,
+        context   => 'production',
         db_user   => 'jamfsoftware',
         db_passwd => 'jamfsw03',
+        war_url   => 'http://internal_web/jss982.war',
     }
 }
 node db {
     jss::db{'production':
-        ensure   => present,
+        ensure    => present,
         db_user   => 'jamfsoftware',
         db_passwd => 'jamfsw03',
-        jss_addr => ['192.168.56.101',
+        jss_addr  => ['192.168.56.101',
                         '192.168.56.102',],
     }
 ```
@@ -135,6 +142,7 @@ node default{
         http            => true,
         https           => false,
         user_enrollment => false,
+        war_url         => 'http://internal_web/jss982.war',
     }
     jss::db{'production':
         ensure => present,
@@ -169,6 +177,7 @@ Move keystore.jks to the modules/jss/files/ and add the following to the desired
         keystoreFile => '/var/lib/tomcat7/keystore.jks',
         keystorePass => 'keystorepass',
         https        => true,
+        war_url      => 'http://internal_web/jss982.war',
     }
     jss::db{'production':
         ensure   => present,
@@ -212,7 +221,8 @@ node default{
         tomcat_dir='/var/lib/tomcat7',
         tomcat_max_threads='450',
         user_enrollment=true,
-        war='ROOT.war'
+        war='ROOT.war',
+        war_url='http://websever/jss982.war',
     }
 
     jss::db{'super_mega_broken':
