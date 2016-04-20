@@ -35,7 +35,8 @@
             clientAuth="false"
             keystoreFile="<%= @keystore_path %>"
             keystorePass="<%= @keystore_pass %>"
-            sslProtocol="TLSv1.2"
+            keystoreType="<%= @keystore_type %>"
+            sslProtocol="<%= @ssl_protocol %>"
             sslEnabledProtocols="TLSv1.2,TLSv1.1,TLSv1"
             server="Apache"
             ciphers="TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,

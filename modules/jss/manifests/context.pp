@@ -11,6 +11,7 @@ define jss::context($ensure='present',
               $db_passwd="${title}pw",
               $db_min_pool='5',
               $db_max_pool='90',
+              $db_name=$title,
               $firewall=true,
               $http=true,
               $http_port='8080',
@@ -18,16 +19,16 @@ define jss::context($ensure='present',
               $https=false,
               $https_port='8443',
               $institution_name='',
-              $keystore_path='/var/lib/tomcat7/keystore.jks',
+              $keystore_path='/var/lib/tomcat7/keystore.p12',
               $keystore_pass='',
+              $keystore_type='PKCS12',
               $loadbalanced=false,
               $log_path='/var/lib/tomcat7/logs',
               $tomcat_dir='/var/lib/tomcat7',
               $tomcat_max_threads='450',
+              $ssl_protocol='TLS',
               $user_enrollment=true,
-              $war='ROOT.war',
-              $war_url=''){
-
+              $war='ROOT.war'){
   #input validation
   validate_re($ensure, '^(present|absent)$',
   "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
@@ -36,8 +37,7 @@ define jss::context($ensure='present',
       package{['tar',
                 'unzip',
                 'java1.6',
-                'tomcat7',
-                'wget']:
+                'tomcat7']:
         ensure => present,
       }
     }
@@ -77,36 +77,27 @@ define jss::context($ensure='present',
         require => Package['tomcat7'],
       }
     }
-    if $war_url == ''{
-      file{"${context}.war":
-        ensure  => present,
-        path    => "${tomcat_dir}/webapps/${context}.war",
-        owner   => 'tomcat7',
-        group   => 'tomcat7',
-        mode    => '0644',
-        source  => "puppet:///modules/jss/${war}",
-        require => Package['tomcat7'],
-      }
-      exec{"pause_for_${context}_deploy":
-        command => 'sleep 15',
-        path    => '/usr/bin:/bin',
-        require => File["${context}.war"],
-        creates => "${tomcat_dir}/webapps/${context}",
-      }
-    } else {
-      exec{"retrieve_${context}.${war}":
-        command   => "wget -O ${tomcat_dir}/webapps/${context}.war ${war_url}",
-        path      => '/usr/bin:/bin',
-        logoutput => on_failure,
-        creates   => "${tomcat_dir}/webapps/${context}.war",
-        require   => Package['tomcat7'],
-      }
-      exec{"pause_for_${context}_deploy":
-        command => 'sleep 15',
-        path    => '/usr/bin:/bin',
-        require => Exec["retrieve_${context}.${war}"],
-        creates => "${tomcat_dir}/webapps/${context}",
-      }
+    file{"${context}.war":
+      ensure  => present,
+      path    => "${tomcat_dir}/webapps/${context}.war",
+      owner   => 'tomcat7',
+      group   => 'tomcat7',
+      mode    => '0644',
+      source  => "puppet:///modules/jss/${war}",
+      require => Package['tomcat7'],
+    }
+    #file{"${tomcat_dir}/webapps/${context}":
+    #  ensure  => directory,
+    #  owner   => 'tomcat7',
+    #  group   => 'tomcat7',
+    #  mode    => '0755',
+    #  require => Exec["pause_for_${context}_deploy"],
+    #  }
+    exec{"pause_for_${context}_deploy":
+      command => 'sleep 15',
+      path    => '/usr/bin:/bin',
+      require => File["${context}.war"],
+      creates => "${tomcat_dir}/webapps/${context}",
     }
     file{"${context}.DataBase.xml":
       content => template('jss/DataBase.xml.erb'),
@@ -142,10 +133,10 @@ define jss::context($ensure='present',
       }
     }
     if $https {
-      file{"${context}.keystore":
+      file{"${context}.p12":
         ensure => present,
         path   => $keystore_path,
-        source => 'puppet:///modules/jss/keystore.jks',
+        source => "puppet:///modules/jss/${context}.p12",
         owner  => 'tomcat7',
         group  => 'tomcat7',
         mode   => '0600',
