@@ -24,6 +24,8 @@ define jss::context($ensure='present',
               $keystore_type='PKCS12',
               $loadbalanced=false,
               $log_path='/var/lib/tomcat7/logs',
+              $redirect_context='production',
+              $root_redirect=false,
               $tomcat_dir='/var/lib/tomcat7',
               $tomcat_max_threads='450',
               $ssl_protocol='TLS',
@@ -77,6 +79,46 @@ define jss::context($ensure='present',
         require => Package['tomcat7'],
       }
     }
+    if !defined(File['context.xml']){
+      file{'context.xml':
+        content => template('jss/context.xml.erb'),
+        path    => "${tomcat_dir}/conf/context.xml",
+        owner   => 'tomcat7',
+        group   => 'tomcat7',
+        mode    => '0644',
+        notify  => Service['tomcat7'],
+        require => Package['tomcat7'],
+      }
+    }
+    if $root_redirect {
+      if !defined(File['ROOT']){
+        file{'ROOT':
+          ensure  => directory,
+          path    => "${tomcat_dir}/webapps/ROOT",
+          owner   => 'tomcat7',
+          group   => 'tomcat7',
+          mode    => '0644',
+          require => Package['tomcat7'],
+        }
+        file{'index.jsp':
+          path    => "${tomcat_dir}/webapps/ROOT/index.jsp",
+          content => template('jss/index.jsp.erb'),
+          owner   => 'tomcat7',
+          group   => 'tomcat7',
+          mode    => '0644',
+          require => File['ROOT'],
+        }
+      }
+    }
+    #if !defined(File['ROOT.war']){
+    #  file {"ROOT.war":
+    #    ensure => 'link',
+    #    force  => true,
+    #    path   => "${tomcat_dir}/webapps/ROOT",
+    #    target => "${tomcat_dir}/webapps/${root_redirect}",
+    #    notify => Service['tomcat7'],
+    #  }
+    #}
     file{"${context}.war":
       ensure  => present,
       path    => "${tomcat_dir}/webapps/${context}.war",
