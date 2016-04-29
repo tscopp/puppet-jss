@@ -195,7 +195,7 @@ Move keystore.jks to the modules/jss/files/ and add the following to the desired
     }
 ```
 ### All parameters
-Don't specify all the paramters at once, this section is merely for reference.
+Don't specify all the parameters at once, this section is merely for reference.
 
 ```ruby
 node default{
